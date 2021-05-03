@@ -1,22 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useContext} from 'react';
 import styled from 'styled-components';
-
-import "firebase/auth";
-import firebase from '../utils/firebase';
-import { addAlumn } from '../utils/DataBase';
+import {ContextRegistro} from './../context/registroContext';
 
 const FromRegister = () => {
 
-    const [test, setTest] = useState([]);
-    const [logico, setlogico] = useState([]);
-    const [matematico, setmatematico] = useState([]);
-    const [lengua, setlengua] = useState([]);
-    const [alumnos, setalumnos] = useState({});
-    const [etapa, changeEtapa] = useState({
-      isAgree : false,
-      gender : ""
-    });
-    
+    const { test, logico, matematico, lengua, cambiar, handleRadio, registrar, alumnos } = useContext(ContextRegistro);
+   
     useEffect(() => {
       for (let i = 0; i <= 90; i++) {
         test.push({ pregunta: "", respuesta: "" });
@@ -26,73 +15,7 @@ const FromRegister = () => {
       }
     }, []);
 
-    let etapaFinal = etapa.gender;
-
-    const registrar = (e) => {
-        e.preventDefault();
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(alumnos.email, alumnos.password)
-        .then((res) => {
-          var data = {
-            user: res.user.uid,
-            activeExam1: true,
-            activeLogic: true,
-            activeMat: true,
-            activeLengua: true,
-            time: 10800,
-            timeLogic: 7300,
-            timeMat: 7300,
-            timeLeng: 7300,
-            username: alumnos.username,
-            alumnData: { carrera: alumnos.carrera },
-            test: test,
-            logico: logico,
-            matematico: matematico,
-            lengua: lengua,
-          };
-          addAlumn(res.user.uid, data, etapaFinal)
-            .then((re) => console.log(re))
-            .catch((err) => console.log(err));
-            sendVerificationEmail();
-        })
-        .catch((err) => {
-          alert(err);
-          console.log(err);
-        });
-    };
-  
-    const sendVerificationEmail = () => {
-      firebase
-        .auth()
-        .currentUser.sendEmailVerification()
-        .then((res) => {
-          console.log(res);
-          alert("Correo enviado");
-        })
-        .catch((err) => {
-          console.log(err);
-          alert("Error al enviar email" + err);
-        });
-    };
-  
-    const cambiar = (e) => {
-      const { value, name } = e.target;
-      setalumnos({
-        ...alumnos,
-        [name]: value,
-      });
-    };
-
-    const handleRadio = (e)=>{
-      const target = e.target;
-      const name = target.name;
-      const value = target.value;
-      changeEtapa({
-        ...etapa,
-        [name] : value
-      })
-    }
+    
 
     return (
         <>
@@ -131,10 +54,12 @@ const FromRegister = () => {
               <label for="e3">e3-2021</label>  
             </div>
           </Etapas>
+
             <input 
                 type="email" 
                 placeholder="Email"
                 name="email"
+                value={alumnos.email}
                 onChange={cambiar}
             />
 
@@ -142,6 +67,7 @@ const FromRegister = () => {
                 type="password" 
                 placeholder="Contraseña"
                 name="password"
+                value={alumnos.password}
                 onChange={cambiar}
             />
 
@@ -149,6 +75,7 @@ const FromRegister = () => {
                 type="text" 
                 placeholder="Nombre completo"
                 name="username"
+                value={alumnos.username}
                 onChange={cambiar}
             />
 
@@ -156,6 +83,7 @@ const FromRegister = () => {
                 type="text" 
                 placeholder="Carrera"
                 name="carrera"
+                value={alumnos.carrera}
                 onChange={cambiar}
             />
             <Boton>Registrar</Boton>
@@ -192,6 +120,7 @@ const Registro = styled.form`
         }
     }
 `;
+
 const Etapas = styled.div`
   width:90%;
   margin: 0px auto;
@@ -206,6 +135,7 @@ const Etapas = styled.div`
     }
   }
 `;
+
 const Boton = styled.button`
     width: 100%;
     background: teal;
