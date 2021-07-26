@@ -1,13 +1,22 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext} from 'react';
 import Header from './components/Header';
 import FormRegister from './components/Form';
+import {ContextAdmin} from './context/AdminContextRegister';
+import RegistroAdmin from './components/AdminRegister';
 
 function App() {
+  
+  const {registroAdmin} = useContext(ContextAdmin);
 
   return (
     <>
-        <Header/>
-        <FormRegister/>
+      <Header/>
+      {
+        registroAdmin === true?
+          <RegistroAdmin/>
+        :
+          <FormRegister/>
+      }
     </>
   );
 }

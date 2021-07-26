@@ -13,3 +13,5 @@ export const addAlumn = async (d, data, etapa) => {
       console.log(err);
     });
 };
+
+export {db};
